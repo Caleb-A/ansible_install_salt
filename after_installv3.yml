@@ -1,0 +1,64 @@
+---
+#Playbook to run after installing openSuSE. Perform OS updates and installs salt minion
+######################
+#Requirements for 
+#Install community.general collection and ansible.posix
+#Command to install: ansible-galaxy collection install community.general
+#Command to install: ansible-galaxy collection install ansible.posix
+########################
+
+- name: Perform OS updates and installs salt minion
+  hosts: opensuse_servers[2]
+  tasks:
+        - name: Refresh all available repos
+          community.general.zypper_repository:
+            repo: '*'
+            runrefresh: yes
+
+        - name: Update all available packages
+          community.general.zypper:
+            name: '*'
+            state: latest
+
+        - name: Apply all available patches
+          community.general.zypper:
+            name: '*'
+            state: latest
+            type: patch
+
+        - name: Install salt-minion
+          community.general.zypper:
+            name: salt-minion
+            state: latest
+
+        - name: Add hosts to /etc/hosts
+
+        - name: Replace string in /etc/salt/minion
+          replace:
+            path: /etc/salt/minion
+            regexp: '#master: salt'
+            replace: 'master: linux-h9l4'
+
+        - name: Start salt-minion service
+          service:
+            name: salt-minion
+            state: started
+            enabled: yes
+
+        - name: Enable ports 4505 and 4506 for salt
+          ansible.posix.firewalld:
+            port: 4505-4506/tcp
+            permanent: yes
+            state: enabled
+
+        - name: Restart firewalld service 
+          systemd:
+            state: restarted
+            daemon_reload: yes
+            name: firewalld
+
+
+
+
+
+

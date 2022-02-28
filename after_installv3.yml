@@ -1,7 +1,7 @@
 ---
 #Playbook to run after installing openSuSE. Perform OS updates and installs salt minion
 ######################
-#Requirements for 
+#Requirements for ansible playbook to run
 #Install community.general collection and ansible.posix
 #Command to install: ansible-galaxy collection install community.general
 #Command to install: ansible-galaxy collection install ansible.posix
